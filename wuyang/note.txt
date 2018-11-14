@@ -1,0 +1,1113 @@
+[git]
+
+    (git 中创建.gitignore)
+
+        retag_app之后会产生一些不必要得文件不需要跟踪提交，为了提交的方便快捷需要ignore，快捷方法是在对应的目录下（前提git st .后显示working directory clean）直接用git st .>.gitignore 之后vi .gitignore将产生的相应文件名前的#去掉，使它们生效即可。再次git st .验证是否成功。
+
+    (git add)
+
+        git add . 出现如下问题
+        fanwuyang@fwy:~/work/mocor_sc9832/packages/apps/Mms$ git add .
+        warning: You ran 'git add' with neither '-A (--all)' or '--ignore-removal',
+        whose behaviour will change in Git 2.0 with respect to paths you removed.
+        Paths like 'packages/apps/Mms/res/drawable-xhdpi/ic_send_sms_unsend_ok.png' that are
+        removed from your working tree are ignored with this version of Git.
+        * 'git add --ignore-removal <pathspec>', which is the current default,
+        ignores paths you removed from your working tree.
+        * 'git add --all <pathspec>' will let you also record the removals.
+        Run 'git status' to check the paths you removed from your working tree.
+
+        解决办法
+        git add -A .
+        原因
+        git add -A = git add . + git add -u
+        git add . Git会递归地将你执行命令时所在的目录中的所有文件添加上去，所以如果你将当前的工作目录作为参数，它就会追踪那儿的所有文件
+        git add -u使用-u参数调用了git add命令，会将本地有改动（包括删除和修改）的已经追踪的文件标记到暂存区中。
+        git add -A使用-A参数会将添加所有改动的已跟踪文件和未跟踪文件。
+
+    (git diff)
+
+        git diff 比较的是工作目录和暂存区域快照之间的差异也就是修改之后还没有暂存起来的变化内容
+        git diff --cached 查看已经暂存起来的文件(staged)和上次提交时的快照之间(HEAD)的差异
+        git diff $id . 表示可以查看当前目录的用户在一定时段内所做工作的不同。
+
+    (git rebase合并多次commit)
+
+        git rebase -i HEAD~3
+        如果没有问题会弹出一个编辑窗口，3次提交的commit倒序排列，最上面的是最早的提交，最下面的是最近一次提交。第一行不动后2行把pick 改为squash保存退出。
+        git rebase --continue   如果有冲突解决过后继续合并
+        git rebase --abort  放弃此次合并
+
+        git cp <版本号>             #也就是git cherry-pick,把对应版本号的提交应用到oos分支
+
+    (git log)
+
+        git reflog 查看历史命令便于回退
+
+    (git merge)
+
+        git merge --no-ff -m "merge with no-ff" dev 作为普通合并并且增加一次提交信息
+
+    (git update-index)
+
+        git update-index --assume-unchanged your_file_path      不想继续追踪某个文件
+        git update-index --no-assume-unchanged your_file_path   如果想再次继续跟踪某个文件
+
+    (git stash)
+
+        git rm --cached file.txt 要移除跟踪但不删除文件,仅是从跟踪清单中删除.
+        git stash
+        git stash list
+        git stash pop    恢复的同时把stash内容也删了
+        git stash apply  恢复后，stash内容并不删除，你需要用git stash drop来删除
+        git stash apply --index对文件的变更被重新应用，但是被暂存的文件没有重新被暂存。想那样的话，你必须在运行 git stash apply 命令时带上一个 --index 的选项来告诉命令重新应用被暂存的变更.
+
+    (git clone revo:mocor_sc7731c配置)
+
+        1.浏览器上登录192.168.0.2用户名hfk 密码1234566 点击setting 选择SSH Public Keys 之后Add Key.
+        2.vi ~/.ssh/id_rsa.pub
+        3.将id_rsa.pub 的内容加入到Add Key
+        4.vi ~/.ssh/config如下
+        host revo
+        hostname 192.168.0.2
+        port 29418
+        user hfk
+        pubkeyAuthentication yes
+        identitiesOnly yes
+        passwordAuthentication no
+        identityFile ~/.ssh/id_rsa
+
+    (git rm )
+
+        问题：
+        fatal: Unable to create '/home/fanwuyang/work/mocor_sc9832/.git/index.l
+        If no other git process is currently running, this probably means a
+        git process crashed in this repository earlier. Make sure no other git
+        process is running and remove the file manually to continue.
+        Cannot save the current index state
+        解决方案：
+        rm -rf .git/index.lock
+[repo]
+    (repo 命令)
+
+        repo init -u doker:mocor_sc9832/manifest
+        repo init (下载repo并克隆manifest)
+        -u :指定一个URL,其连接到一个maniest仓库
+        -m :在manifest 仓库中选择一个xml文件
+        -b :选择一个maniest仓库中的一个特殊分支
+
+        repo sync (下载代码)
+        repo start (创建并切换分支)
+        repo prune [project list] 删除已经merge 的 project
+        repo diff [ project-list ] 显示提交的代码和当前工作目录代码之间的差异。
+
+[vi vim]
+
+    (vi 快捷键)
+
+        移动光标
+        按「ctrl」+「b」：屏幕往"后"移动一页。
+        按「ctrl」+「f」：屏幕往"前"移动一页。
+        按「ctrl」+「u」：屏幕往"后"移动半页。
+        按「ctrl」+「d」：屏幕往"前"移动半页。
+        按「w」：光标跳到下个字的开头
+        按「e」：光标跳到下个字的字尾
+        按「b」：光标回到上个字的开头
+        删除文字
+        「x」：每按一次，删除光标所在位置的"后面"一个字符。
+        「X」：大写的X，每按一次，删除光标所在位置的"前面"一个字符。
+        「dd」：删除光标所在行。
+        复制
+        「yw」：将光标所在之处到字尾的字符复制到缓冲区中。
+        「yy」：复制光标所在行到缓冲区。
+        「p」：将缓冲区内的字符贴到光标所在位置。注意：所有与"y"有关的复制命令都必须与"p"配合才能完成复制与粘贴功能。
+        替换
+        「r」：替换光标所在处的字符。
+        「R」：替换光标所到之处的字符，直到按下「ESC」键为止。
+         :s/old/new//用new替换行中首次出现的old
+         :s/old/new/g        //用new替换行中所有的old
+         :n,m s/old/new/g    //用new替换从n到m行里所有的old
+         :%s/old/new/g       //用new替换当前文件里所有的old
+         cw                   //删除光标后一个单词并进入插入模式
+         cl                   //删除光标后一个字母并进入插入模式
+
+    (vim map nmap)
+
+        map作用的范围比nmap更广。map作用模式： n、v、o （普通、可视和选择、操作符等待） nmap是:map的普通模式板，也就是说其绑定的键只作用于普通模式。
+        :map {lhs} {rhs}
+        含义： 在:map作用的模式中把键系列 {lhs} 映射为 {rhs}，{rhs}可进行映射扫描，也就是可递归映射
+        nmap <silent> <leader>te :tabe<cr>
+        配置信息都在～/.vimrc里面
+        nmap <leader>cg :cs find g <C-R>=expand("<cword>")<CR><CR> 查找这个定义
+        nmap <leader>cc :cs find c <C-R>=expand("<cword>")<CR><CR> 查找调用这个函数的函数（们）
+        nmap <leader>ct :cs find t <C-R>=expand("<cword>")<CR><CR> 查找这个字符串
+        nmap <leader>ce :cs find e <C-R>=expand("<cword>")<CR><CR> 查找这个egrep匹配模式
+        nmap <leader>cf :cs find f <C-R>=expand("<cfile>")<CR><CR> 查找这个文件
+        nmap <leader>ci :cs find i <C-R>=expand("<cfile>")<CR><CR> 查找#include这个文件的文件（们）
+        nmap <leader>cd :cs find d <C-R>=expand("<cword>")<CR><CR> 查找被这个函数调用的函数（们）
+
+        查找忽略大小写:set ic
+        查找区分大小写:set noic
+        移动到指定的字符上
+        命令"fx"在当前行上查找下一个字符x.(f find)命令"tx"将光标停留在它之前的一个字符上.（t to）
+        /fx/Fx和tx/Tx的区别是用f光标停留在x上，用t光标停留在x的前面一个上.
+        t       till的意思,这是我最喜欢的命令之一
+        dt"     行内删除直到","不删除
+        ct)     行内改变直到),)不删除
+        gd      跳转到光标变量的定义位置(局部变量)
+        gD      跳转到光标变量的定义位置(全局变量)
+        g;      上一个修改的地方
+        g,      下一个修改的地方
+        (/      跳转到当前注释块开始处
+        ]/      跳转到当前注释块结束处
+        ci(, di(, yi(：修改、剪切或复制()之间的内容。
+        ca(, da(, ya(：修改、剪切或复制()之间的内容，包含()。
+        其他同理
+        :Sex -- 水平分割一个窗口，浏览文件系统；
+        :Vex -- 垂直分割一个窗口，浏览文件系统；
+
+    (vim mark书签)
+
+        m{a-zA-Z}    保存书签
+        小写的是文件书签，可以用(a-z）中的任何字母标记。
+        大写的是全局书签，用大写的(A-Z)中任意字母标记
+        `a：到书签a处。注意这个不是单引号，它一般位于大部分键盘的1的左边。
+        `.：到你上次编辑文件的地方。
+
+    (v进入可视化模式)
+
+        Shift+v 整行选择
+        Ctrl+v  块选择
+        gv      跳转到上次的选中区域;
+        vab     选择()里面的内容, 包括()
+        vaB     选择{}里面的内容,包括大括号{}
+        在这种模式下方便对排列比较整齐的代码做整体修改
+
+[Android]
+
+    (Android的m、mm、mmm编译命令的使用)
+
+        Android源码目录下的build/envsetup.sh文件，描述编译的命令
+        要想使用这些命令，首先需要在android源码根目录执行. envsetup.sh 脚本设置环境
+        m：编译所有的模块
+        mm：编译当前目录下的模块，当前目录下要有Android.mk文件
+        mmm：编译指定路径下的模块，指定路径下要有Android.mk文件
+
+        linux下系统编译要根据手机分辨率不同使用不同的编译方法编译，不然会走很多弯路。
+
+    (android:layout_gravity和android:gravity的区别)
+
+        android:gravity：这个是针对控件里的元素来说的，用来控制元素在该控件里的显示位置
+        android:layout_gravity：这个是针对控件本身而言，用来控制该控件在包含该控件的父控件中的位置
+        这两个属性可选的值有：top、bottom、left、right、center_vertical、fill_vertical、center_horizontal、fill_horizontal、center、fill、clip_vertical
+        特殊情况
+        当我们采用LinearLayout布局时，有以下特殊情况需要我们注意：
+        (1)当 android:orientation="vertical"时android:layout_gravity只有水平方向的设置才起作用，垂直方向的设置不起作用。即：left，right，center_horizontal 是生效的
+        (2)当 android:orientation="horizontal"时android:layout_gravity只有垂直方向的设置才起作用，水平方向的设置不起作用。即：top，bottom，center_vertical 是生效的
+
+    (android注意转换思维)
+
+        mTimerView.setText(timeStr.substring((hour == 0) ? 3 : 0, timeStr.length()));
+        mTimerView.setText((hour == 0) ? timeStr.substring(3, timeStr.length()) : timeStr);
+
+    (android AndroidMainfest)
+
+        android:excludeFromRecents
+        Android框架为我们维护了一个名叫“最近运行”的应用程序列表，以方便进行应用程序切换。
+        该属性表示应用程序是否应该将Activity从最近运行的应用程序列表排除。
+        如果排除，则为true，否则为false。 默认值为false。
+        这个属性的前提是该Activity是某个任务的根Activity。
+        android:noHistory
+        这个属性用于设置在用户离开该Activity，并且它在屏幕上不再可见的时候，是否应该从Activity的堆栈中删除。
+        如果应该删除，则为true，否则为false，默认值是false。
+        true意味着Activity将不会留下历史痕迹，它将不会为任务而在Activity栈中保留数据，所以用户将不能返回到Activity上
+
+    (android ListView)
+
+        1. ListView的Id为固定不变的，为"@id/android:list“，ListActivity会根据id自动查找ListView引用；在 Activity 中使用 setListAdapter(adapter); 时就默认设置到了这个list上。如果按一般控件的写法 <ListView android:id="@+id/myListView" …… />,则需要 findViewById 先得到控件对像，再调用对像的 setListAdapter(adapter);
+        2. 但如果当ListView中没有值而又想提示一句话时，那么用于指定显示提示信息的TextView的id 必须为”"@id/android:empty"，提示的信息可以通过android:text进行指定。
+
+    (android 不同分辨率总结)
+
+        4:3
+            VGA          640*480 (Video Graphics Array)
+            QVGA         320*240 (Quarter VGA)
+            HVGA         480*320 (Half-size VGA)
+            SVGA         800*600 (Super VGA)
+        5:3
+            WVGA         800*480 (Wide VGA)
+        16:9
+            FWVGA        854*480 (Full Wide VGA)
+            HD           1920*1080 High Definition
+            QHD          960*540
+            720p         1280*720  标清
+            1080p        1920*1080 高清
+
+            "HVGA        mdpi"
+            "WVGA        hdpi"
+            "FWVGA       hdpi"
+            "QHD         hdpi"
+            "720P        xhdpi"
+
+    (Android屏幕适配小技巧sw<n>dp )
+
+        第一种后缀:sw<N>dp,如layout-sw600dp, values-sw600dp 这里的sw代表smallwidth的意思，当你所有屏幕的最小宽度都大于600dp时,屏幕就会自动到带sw600dp后缀的资源文件里去寻找相关资源文件，这里的最小宽度是指屏幕宽高的较小值，每个屏幕都是固定的，不会随着屏幕横向纵向改变而改变。
+        第二种后缀:w<N>dp 如layout-w600dp, values-w600dp 带这样后缀的资源文件的资源文件制定了屏幕宽度的大于Ndp的情况下使用该资源文件，但它和sw<N>dp不同的是，当屏幕横向纵向切换时，屏幕的宽度是变化的，以变化后的宽度来与N相比，看是否使用此资源文件下的资源。
+        第三种后缀:h<N>dp 如layout-h600dp, values-h600dp 这个后缀的使用方式和w<N>dp一样，随着屏幕横纵向的变化，屏幕高度也会变化，根据变化后的高度值来判断是否使用h<N>dp ，但这种方式很少使用，因为屏幕在纵向上通常能够滚动导致长度变化，不像宽度那样基本固定，因为这个方法灵活性不是很好，google官方文档建议尽量少使用这种方式。
+
+    (android requestWindowFeature())
+
+        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        表示设置当前的Activity 无Title并且全屏
+        调用这个方法有个限制,即必须在setContentView(R.layout.main);
+        之前调用,否则会抛出异常
+        requestWindowFeature(featrueId),它的功能是启用窗体的扩展特性
+        1.DEFAULT_FEATURES：系统默认状态，一般不需要指定
+        2.FEATURE_CONTEXT_MENU：启用ContextMenu，默认该项已启用，一般无需指定
+        3.FEATURE_CUSTOM_TITLE：自定义标题。当需要自定义标题时必须指定。如：标题是一个按钮时
+        4.FEATURE_INDETERMINATE_PROGRESS：不确定的进度
+        5.FEATURE_LEFT_ICON：标题栏左侧的图标
+        6.FEATURE_NO_TITLE：没有标题
+        7.FEATURE_OPTIONS_PANEL：启用“选项面板”功能，默认已启用。
+        8.FEATURE_PROGRESS：进度指示器功能
+        9.FEATURE_RIGHT_ICON:标题栏右侧的图标
+
+    (android ActionBar)
+
+        actionBar.setDisplayHomeAsUpEnabled(true)    //给左上角图标的左边加上一个返回的图标 。对应ActionBar.DISPLAY_HOME_AS_UP
+        actionBar.setDisplayShowHomeEnabled(true)    //使左上角图标可点击，对应id为android.R.id.home，对应ActionBar.DISPLAY_SHOW_HOME
+        actionBar.setDisplayShowCustomEnabled(true)  //使自定义的普通View能在title栏显示，即actionBar.setCustomView能起作用，对应ActionBar.DISPLAY_SHOW_CUSTOM
+        actionBar.setDisplayShowTitleEnabled(true)   //对应ActionBar.DISPLAY_SHOW_TITLE
+
+        Drawable d = getResources().getDrawable(R.drawable.ic_launcher);
+        actionBar.setBackgroundDrawable(d);
+        actionBar.setBackgroundDrawable(new ColorDrawable(Color.BLUE));  //给ActionBara设置自定义的背景或者是颜色
+        int actionBarHeight = getActionBar().getHeight();  //获取actionbar 高度
+
+    (android fragment)
+
+        onAttach(Activity) 当Fragment与Activity发生关联时调用。
+        onCreateView(LayoutInflater, ViewGroup,Bundle) 创建该Fragment的视图
+        onActivityCreated(Bundle) 当Activity的onCreate方法返回时调用
+        onDestoryView() 与onCreateView想对应，当该Fragment的视图被移除时调用
+        onDetach() 与onAttach相对应，当Fragment与Activity关联被取消时调用
+
+    (android 全屏设置)
+
+        第一种方式：
+        在protected void onCreate(Bundle savedInstanceState) 里面的this.setContentView() 之前加入以下代码
+        this.requestWindowFeature(Window.FEATURE_NO_TITLE); //取消标题
+        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, //取消状态栏
+        WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        第二种方式：
+        在res/values 目录创建个theme.xml 文件
+        <style name="theme_fullScreen" parent="android:Theme.Black">
+        <item name="android:windowNoTitle">true</item> <!-- 设置无标题 -->
+        <item name="android:windowFullscreen">?android:windowNoTitle</item> <!-- 是否填充满屏幕，引用android:windowNoTitle 的值 -->
+        </style>
+        在 AndroidManifest.xml 使用：
+        <activity android:name=".LoginActivity" android:theme="@style/theme_fullScreen"/>
+
+    (android listview)
+
+         listview的上边和下边有黑色的阴影
+         解决： android:fadingEdge=”none”
+         修改listview的Item默认选择时的黄色背景
+         解决：在Java文件中使用listview.setSelector()方法，或使用如下代码
+         android:listSelector="#00000000"//这样写是透明的，也可加入Drawable图片
+         lsitview的每一项之间需要设置一个图片做为间隔
+         解决： android:divider=”@drawable/list_driver”`
+
+    (android intent)
+
+        1.显式方式。直接设置目标组件的ComponentName，用于一个应用内部的消息传递
+        Intent intent = new Intent();
+        ComponentName cn = new ComponentName(HelloActivity.this, "com.byread.activity.OtherActivity");  构造的参数为当前Context和目标组件的类路径名
+        intent.setComponent(cn);
+        startActivity(intent);
+        2.隐式方式。即Intent的发送者在构造Intent对象时，并不知道也不关心接收者是谁，有利于降低发送者和接收者之间的耦合,当ComponentName为空，用于调用其他应用中的组件
+        Intent it = new Intent();
+        it.setAction("com.google.test");
+        startActivity(it);
+
+        Intent用法实例
+        1.无参数Activity跳转
+        Intent it = new Intent(Activity.Main.this, Activity2.class);
+        startActivity(it);
+        2.向下一个Activity传递数据（使用Bundle和Intent.putExtras）
+        Intent it = new Intent(Activity.Main.this, Activity2.class);
+        Bundle bundle = new Bundle();
+        bundle.putString("name", "This is from MainActivity!");
+        it.putExtras(bundle);       // it.putExtra(“test”, "shuju”);
+        startActivity(it);          // startActivityForResult(it,REQUEST_CODE);
+        对于数据的获取可以采用：
+        Bundle bundle = getIntent().getExtras();
+        String name = bundle.getString("name");
+        3.向上一个Activity返回结果（使用setResult，针对startActivityForResult(it,REQUEST_CODE)启动的Activity）
+        Intent intent = getIntent();
+        Bundle bundle2 = new Bundle();
+        bundle2.putString("name", "This is from ShowMsg!");
+        intent.putExtras(bundle2);
+        setResult(RESULT_OK, intent);
+        4.回调上一个Activity的结果处理函数（onActivityResult）
+        @Override
+        protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+            // TODO Auto-generated method stub
+            super.onActivityResult(requestCode, resultCode, data);
+            if (requestCode == REQUEST_CODE) {
+                if (resultCode == RESULT_CANCELED) setTitle("cancle");
+                else if (resultCode == RESULT_OK) {
+                    String temp = null;
+                    Bundle bundle = data.getExtras();
+                    if (bundle != null)   temp = bundle.getString("name");
+                    setTitle(temp);
+                }
+            }
+        }
+
+        发短信
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.putExtra("sms_body", "the sms text");
+        intent.setType("vnd.android-dir/mms-sms");
+        直接发短信
+        ri smsToUri = Uri.parse("smsto:10086");
+        ntent intent = new Intent(Intent.ACTION_SENDTO, smsToUri);
+        ntent.putExtra("sms_body", "the sms text");
+        发彩信
+        ri mmsUri = Uri.parse("content://media/external/images/media/23");
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.putExtra("sms_body", "the sms text");
+        intent.putExtra(Intent.EXTRA_STREAM, mmsUri);
+        intent.setType("image/png");
+
+    (android 创建前台Service)
+
+        首先创建了一个Notification对象，然后调用了它的setLatestEventInfo()方法来为通知初始化布局和数据，并在这里设置了点击通知后就打开MainActivity。然后调用startForeground()方法就可以让Service变成一个前台Service，并会将通知的图片显示出来。
+        @Override
+        public void onCreate() {
+            super.onCreate();
+            Notification notification = new Notification(R.drawable.ic_launcher, "有通知到来", System.currentTimeMillis());
+            Intent notificationIntent = new Intent(this, MainActivity.class);
+            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+            notification.setLatestEventInfo(this, "通知的标题", "通知的内容", pendingIntent);
+            startForeground(1, notification);
+        }
+
+    (android Preference)
+
+        Preference的跳转：
+        方法一：在配置每个Preference元素节点时，我们可以显示为点击它时所跳转的Intent。点击该Preference，跳转至目标Intent
+            <Preference android:key="wifi_setting" android:title="Wi-Fi设置"
+            android:summary="设置和管理无线接入点" android:dependency="apply_wifi">
+            <!-- 点击时 自定义一个默认跳转Intent  action指定隐式Intent -->
+            <!-- action指定隐式Intent ; targetPackage和targetClass指定显示Intent-->
+            <intent android:action="com.feixun.action.seemAction"
+                android:targetPackage="com.feixun.qin" android:targetClass="com.feixun.qin.MainActivity" />
+            </Preference>
+        方法二：可以在onPreferenceTreeClick()创建新的intent显示的进行跳转
+            public booleanonPreferenceTreeClick (PreferenceScreen preferenceScreen, Preference preference)  说明：当Preference控件被点击时，触发该方法。
+             1 先调用onPreferenceClick()方法，如果该方法返回true，则不再调用onPreferenceTreeClick方法；如果onPreferenceClick方法返回false，则继续调用onPreferenceTreeClick方法。
+             2 onPreferenceChange的方法独立与其他两种方法的运行。也就是说，它总是会运行。
+             点击某个Preference控件后，会先回调onPreferenceChange()方法，即是否保存值，然后再回调onPreferenceClick以及onPreferenceTreeClick()方法，因此在onPreferenceClick/onPreferenceTreeClick方法中我们得到的控件值就是最新的Preference控件值。
+
+        获取preferences可以通过三种方式：
+        一、getPreferences()：可以获取同一activity中的preference；
+        二、getSharedPreferences()：可以获取映用级别的preferences()，在这个例子中由于我们封装在同一app中，也可以使用SharePreferences prefs = getSharedPreferences("com.wei.android.learning_preferences" ,0)；其中第一个参数name的格式是<package_name>_preferences；
+        三、getDefaultSharedPreferences()：Preference的Activity继承PreferenceActivity，然后在onCreate()方法中通过addPreferencesFromResource(R.xml.custom_preference) (我们自定义的Preference 布局)。
+
+    (andoid Notification)
+
+        使用的基本流程：
+        Step 1.获得NotificationManager对象： NotificationManager mNManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        Step 2.创建一个通知栏的Builder构造类： Notification.Builder mBuilder = new Notification.Builder(this);
+        Step 3.对Builder进行相关的设置，比如标题，内容，图标，动作等！
+        Step 4.调用Builder的build()方法为notification赋值
+        Step 5.调用NotificationManager的notify()方法发送通知！
+        如何取消掉通知栏上的通知
+        (1)设置对应的flags，让用户点击既被消除：
+        notification.flags = FLAG_AUTO_CANCEL;
+        (2) 通过手动消除某项或则全部通知
+        mNotificationMgr.cancle(NOTIFICATION_ID);//消除对应ID的通知
+        mNotificationMgr.cancleAll();//消除创建的所有通知
+
+    (android color)
+
+        java 获取
+        int mycolor = getResources().getColor(R.color.mycolor);
+        btn.setBackgroundColor(mycolor);
+
+        int mycolor = 0xff123456;  如果我们在Java中直接定义颜色值的话,要加上0x,而且不能把透明度漏掉:
+        btn.setBackgroundColor(mycolor);
+        xml
+        @color/xxx
+
+    (android Cursor)
+
+        在使用EditText的XML 文件中加入一个属性：
+        android:textCursorDrawable="@null" 这个属性是用来控制光标颜色的"@null" 是作用是让光标颜色和text color一样
+        android:textCursorDrawable="@drawable/edittext_cursor"
+        如何隐藏edittext闪烁光标
+        在EditText控件的xml中添加这个属性就行了 android:cursorVisible="false"
+
+    (android 获取照片 )
+
+        1.从本地相册获取照片
+        protected void getImageFromAlbum() {
+            Intent intent = new Intent(Intent.ACTION_PICK);
+            intent.setType("image/*");
+            startActivityForResult(intent, REQUEST_CODE_PICK_IMAGE);
+        }
+
+        2.从照相机获取照片
+        protected void getImageFromCamera() {
+            String state = Environment.getExternalStorageState();
+            if (state.equals(Environment.MEDIA_MOUNTED)) {
+                Intent getImageByCamera = new Intent("android.media.action.IMAGE_CAPTURE");
+                startActivityForResult(getImageByCamera, REQUEST_CODE_CAPTURE_CAMEIA);
+            }
+            else {
+                Toast.makeText(getApplicationContext(), "请确认已经插入SD卡", Toast.LENGTH_LONG).show();
+            }
+        }
+
+    (android edittext)
+
+        光标位置设置最后
+        Editable etext = mSubjectTextEditor.getText();
+        Selection.setSelection(etext, etext.length());
+        修改EditText的光标颜色
+        Android:textCursorDrawable="@null"
+        android:textCursorDrawable   这个属性是用来控制光标颜色的，"@null"   是作用是让光标颜色和text color一样
+
+    (android Animator)
+
+        ObjectAnimator mObjectAnimator = ObjectAnimator.ofInt(view, "customerDefineAnyThingName", 0,  1).setDuration(2000);
+        mObjectAnimator.addUpdateListener(new AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+            //int value = animation.getAnimatedValue();  可以获取当前属性值
+            //view.postInvalidate();  可以主动刷新
+            //view.setXXX(value);
+            //view.setXXX(value);
+            }
+        });
+        ObjectAnimator类提供了ofInt、ofFloat、ofObject这个三个常用的方法，这些方法都是设置动画作用的元素、属性、开始、结束等任意属性值。当属性值（上面方法的参数）只设置一个时就把通过getXXX反射获取的值作为起点，设置的值作为终点；如果设置两个（参数），那么一个是开始、另一个是结束。 特别注意：ObjectAnimator的动画原理是不停的调用setXXX方法更新属性值，所有使用ObjectAnimator更新属性时的前提是Object必须声明有getXXX和setXXX方法。
+
+        Y轴3D旋转动画实现实例：
+        ObjectAnimator.ofFloat(view, "rotationY", 0.0f, 360.0f).setDuration(1000).start();
+        PropertyValuesHolder：多属性动画同时工作管理类
+        ValueAnimator：属性动画中的时间驱动，管理着动画时间的开始、结束属性值，相应时间属性值计算方法等
+        ValueAnimator只是动画计算管理驱动，设置了作用目标，但没有设置属性，需要通过updateListener里设置属性才会生效
+
+
+
+        private TranslateAnimation myAnimation_Translate;
+        TranslateAnimation(float fromXDelta, float toXDelta, float fromYDelta, float toYDelta)
+
+        myAnimation_Alpha = new AlphaAnimation(0.1f, 1.0f); 0.0表示完全透明 1.0表示完全不透明
+        myAnimation_Scale = new ScaleAnimation(0.0f, 1.4f, 0.0f, 1.4f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        以上四种属性值    0.0表示收缩到没有 1.0表示正常无伸缩  值小于1.0表示收缩  值大于1.0表示放大 后四个参数pivotXType为动画在X轴相对于物件位置类型  pivotXValue为动画相对于物件的X坐标的开始位置 pivotXType为动画在Y轴相对于物件位置类型 pivotYValue为动画相对于物件的Y坐标的开始位置
+        myAnimation_Rotate = new RotateAnimation(0.0f, +350.0f, Animation.RELATIVE_TO_SELF,0.5f,Animation.RELATIVE_TO_SELF, 0.5f);
+        //第一个参数fromDegrees为动画起始时的旋转角度
+        //第二个参数toDegrees为动画旋转到的角度
+        //第三个参数pivotXType为动画在X轴相对于物件位置类型
+        //第四个参数pivotXValue为动画相对于物件的X坐标的开始位置
+        //第五个参数pivotXType为动画在Y轴相对于物件位置类型
+        //第六个参数pivotYValue为动画相对于物件的Y坐标的开始位置
+
+        public void startAnimation (Animation animation)
+            view.startAnimation(myAnimation_Alpha);
+            view.startAnimation(myAnimation_Scale);
+            view.startAnimation(myAnimation_Translate);
+            view.startAnimation(myAnimation_Rotate);
+
+    (android launcher)
+
+        检测当前界面是不是launcher
+        ActivityManager activityManager = (ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<RunningTaskInfo> tasks = activityManager.getRunningTasks(1);
+        boolean result = tasks.get(0).baseActivity.getPackageName().contains("launcher");
+        如果result 是 true 则就是说当期的那个界面在主屏！
+
+[java]
+
+    (Array转换成Map)
+
+        import java.util.Map;
+        import org.apache.commons.lang.ArrayUtils;
+        public class Main {
+            public static void main(String[] args) {
+                String[][] countries = { { ”United States”, ”New York” }, { ”United Kingdom”, ”London” },
+                    { ”Netherland”, ”Amsterdam” }, { ”Japan”, ”Tokyo” }, { ”France”, ”Paris” } };
+            Map countryCapitals = ArrayUtils.toMap(countries);
+            System.out.println(“Capital of Japan is ” + countryCapitals.get(“Japan”));
+            System.out.println(“Capital of France is ” + countryCapitals.get(“France”));
+            }
+
+        //得到当前方法的名字
+        String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
+        //转字符串到日期
+        java.util.Date = java.text.DateFormat.getDateInstance().parse(date String);
+        也可以为
+        SimpleDateFormat format = new SimpleDateFormat( ”dd.MM.yyyy” );
+        Date date = format.parse( myString );
+
+[ubuntu linux]
+    (system setting 图标消失)
+        原因：
+        多半是卸载了ibus，同时就把unity-control-center卸载了， 貌似ibus和unity-control-center捆绑着。就是卸载一个就同时卸载另外一个，安装一个同时安装另一个
+        解决方案：
+        终端直接执行：unity-control-center如果内容提示不正确，执行sudo apt-get install --reinstall unity-control-center即重新安装。
+
+    (uniq)
+        常见参数：
+        -c,--count ***** 在每行旁边显示改行重复出现的次数
+        -d,--repeated 仅显示重复出现的行，2次或2次以上的行，默认的去重包含1次。
+
+    (ubuntu 常用命令)
+        (sed)
+            删除空行
+            sed '/^$/d'  test.txt //删除dataf5的空白行。^ 表开头，$ 表尾部，这两者之间没有任何字符，代表该行是一空白行
+
+            替换/通配符
+            sed 's/^...//'  test.txt  //把每一行开头的3个字符删除。
+            sed 's/...$//'  test.txt   //把每一行末尾3个字符删除
+
+            将文件1.txt内的文字“garden”替换成“mirGarden”
+            sed -i "s/garden/mirGarden/g" 1.txt //sed -i
+            将当前目录下的所有文件内的“garden”替换成“mirGarden”
+            sed -i "s/garden/mirGarden/g" `ls` //
+
+            ps -aux |grep jdk   从所有运行的程序中筛选包含jdk的程序
+
+    (ubuntu vmware)
+
+        卸载
+        vmware-installer -l
+        Product Name Product Version
+        ====================== ====================
+        vmware-player 3.0.0.203739
+        sudo vmware-installer -u vmware-player
+        vmware-installer -l看装的什么产品，知道后，sudo vmware-installer -u 产品名， 即可卸载相应产品。
+
+    (.bashrc)
+
+        . ~/.bashrc  每次修改.bashrc后，使用source ~/.bashrc（或者 . ~/.bashrc）就可以立刻加载修改后的设置，使之生效
+        .bashrc      中环境变量的配置方法是：PATH=$PATH:~/.bin   $PATH代表以前的环境变量配置信息  追加的信息要以:来分隔
+
+    (ssh)
+
+        问题：ssh 生成SSH生成id_rsa, id_rsa.pub后，连接服务器报如下错误：
+        Agent admitted failure to sign using the key
+        解决方法：
+        在当前用户下执行命令： ssh-add
+        在试试即可解决ssh doker
+
+        SSH分客户端openssh-client和openssh-server
+        sudo apt-get install openssh-client
+        sudo apt-get install openssh-server
+        ps -e |grep ssh 查看sshserver是否启动,如果看到sshd那说明ssh-server已经启动
+        sudo /etc/init.d/ssh startssh-server    启动ssh-server  配置文件位于/etc/ssh/sshd_config，在这里可以定义SSH的服务端口，默认端口是22
+        重启SSH服务：
+        sudo /etc/init.d/ssh stop
+        sudo /etc/init.d/ssh start
+        id_rsa       密钥的设置。想要不需要每次都通过密码登录远程的服务器，首先将自己～/.ssh/id_rsa.pub的公钥复制到远程需要登录的服务器的~/.ssh/authorized_key中,之后在自己的~/.ssh/修改config
+        eog ( eye of gmone)用法如 ：eog   a.png 查看a.png图片
+
+    (ack-grep)
+
+        ack-w eat 在当前目录递归搜索单词”eat”,不匹配类似于”feature”或”eating”的字符串
+        ack-grep -f hello.py    #查找全匹配文件
+
+    (grep)
+
+        Linux系统中grep命令是一种强大的文本搜索工具，它能使用正则表达式搜索文本，并把匹 配的行打印出来。grep全称是Global Regular Expression Print，表示全局正则表达式版本,它的使用权限是所有用户.
+        grep [-acinv] [--color=auto] '搜寻字符串' filename
+        选项与参数:
+        -a ：将 binary 文件以 text 文件的方式搜寻数据
+        -c ：计算找到 '搜寻字符串' 的次数
+        -i ：忽略大小写的不同，所以大小写视为相同
+        -n ：顺便输出行号
+        -v ：反向选择，亦即显示出没有 '搜寻字符串' 内容的那一行！
+        --color=auto ：可以将找到的关键词部分加上颜色的显示！
+
+    (source)
+
+        source FileName
+        作用:在当前bash环境下读取并执行FileName中的命令。
+        注：该命令通常用命令“.”来替代.
+        如：source .bash_rc 与 . .bash_rc 是等效的。
+        注意：source命令与shell scripts的区别是，source在当前bash环境下执行命令，而scripts是启动一个子shell来执行命令。这样如果把设置环境变量（或alias等等）的命令写进scripts中，就只会影响子shell,无法改变当前的BASH,所以通过文件（命令列）设置环境变量时，要用source 命令。
+        retag_app 生成标签才能方便在vi模式下搜索
+
+    (文件搜索)
+
+        find用法
+        find <指定目录> <指定条件> <指定动作>
+        find -atime -2   查找指定时间内修改过的文件
+        find /opt/soft/test/ -perm 777  按照目录或文件的权限来查找文件
+        find . -type f -name "*.log"  按类型查找
+        -type b/d/c/p/l/f  查是块设备、目录、字符设备、管道、符号链接、普通文件
+        find ~ -name "*.txt" -print   在$HOME中查.txt文件并显示
+        locate用法
+        使用locate搜索linux系统中的文件，它比find命令快
+        locate filename
+        whereis用法
+        使用”whereis“命令可以搜索系统中的所有可执行文件即二进制文件
+        whereis grep
+        type用法
+        使用type命令查看系统中的某个命令是否为系统自带的命令
+        type gerp
+
+    (Ubuntu建立新用户与删除)
+
+        sudo adduser xxx 这样的命令会在home目录下添加一个帐号
+        sudo useradd xxx 仅仅是添加用户， 不会在home目录添加帐号
+        sudo deluser *** 这样的命令可以直接删除帐号。
+        sudo userdel -r ***加上-r的选项，在删除用户的同时一起把这个用户的宿主目录和邮件目录删除。
+
+    (Ubuntu中脚本命令执行. xx和./xx的区别 )
+
+        .xx 能够保留shell中的执行环境或者结果
+        ./xx 执行后恢复到原来的环境。
+
+    (ubuntu errorE212 )
+        问题：E212: Can't open file for writing
+        原因：权限不对
+        解决办法：chmod 666 filename
+
+    (ubuntu .deb && .rpm && yum安装方法)
+
+        dpkg -i file.deb
+        dpkg -r <package> 移除一个已安装的包裹。
+        dpkg -P <package> 完全清除一个已安装的包裹。和 remove 不同的是，remove 只是删掉数据和可执行文件，purge 另外还删除所有的配制文件。
+        dpkg -L <package> 列出 <package> 安装的所有文件清单。同时请看 dpkg -c 来检查一个 .deb 文件的内容。
+        rpm -ivh example.rpm 安装 example.rpm 包并在安装过程中显示正在安装的文件信息及安装进度；
+        rpm -ivh --nodeeps package.rpm 安装一个rpm包而忽略依赖关系警告
+        rpm -U package.rpm 更新一个rpm包但不改变其配置文件
+        rpm -F package.rpm 更新一个确定已经安装的rpm包
+        rpm -e package_name.rpm 删除一个rpm包
+        rpm -qa 显示系统中所有已经安装的rpm包
+        rpm -qa | grep httpd 显示所有名称中包含 "httpd" 字样的rpm包
+        yun install package_name 下载并安装一个rpm包
+        yum localinstall package_name.rpm 将安装一个rpm包，使用你自己的软件仓库为你解决所有依赖关系
+        yum update package_name 更新一个rpm包
+        yum remove package_name 删除一个rpm包
+        yum list 列出当前系统中安装的所有包
+        yum search package_name 在rpm仓库中搜寻软件包
+
+    (ubuntu 备份)
+
+        tar -cvpzf /media/sys_bak/laptop_sys/usr.tar.gz /usr
+        tar -cvpzf /media/sys_bak/laptop_sys/var.tar.gz /var
+        tar是用来备份的指令名
+        c 新建一个备份文件
+        v 详细模式，将tar运行时的输出到屏幕
+        p 保存许可，并应用到所有文件
+        z 采用'gzip' 压缩备份文件，如果需要采用'bzip2' 格式压缩，则可以用j
+        f 说明备份文件的存放位置
+
+    (^M去掉)
+
+         DOS下的编辑器和Linux编辑器对文件行末的回车符处理不一致 对于回车符的定义：
+         windows：0D0A
+         unix\linux: 0A
+         MAC: 0D
+         解决方案
+         (1)是用VI的命令： 命令模式下输入 :set fileformat=unix
+         (2)VI下使用正则表达式替换  g/\^M/s/\^M// 或者 %s/^M//g
+         (3)在终端下敲命令： $ dos2unix filename 直接转换成unix格式，就OK了！～
+
+    (bcompare)
+
+        远程拷贝～/.beyondcompare/在自己相应的目录下
+        拷贝/usr/bin/bcompare
+        拷贝/usr/lib/beyondcompare
+        http://www.linuxdiyf.com/linux/20015.html
+
+    (bash)
+
+        ssh-copy-id user@host1 把产生的公钥直接复制到远程主机
+        撷取命令： cut, grep
+        cut -d '分隔字符' -f fields
+        grep [-acinv] [--color=auto] '搜寻字符串' filename
+        -c ：计算找到 '搜寻字符串' 的次数
+        -i ：忽略大小写的不同，所以大小写视为相同
+        -n ：顺便输出行号
+        -v ：反向选择
+        排序命令： sort, wc, uniq
+        sort [-fbMnrtuk] [file or stdin]
+        -f  ：忽略大小写的差异，例如 A 与 a 视为编码相同；
+        -b  ：忽略最前面的空格符部分；
+        -M  ：以月份的名字来排序，例如 JAN, DEC 等等的排序方法；
+        -n  ：使用『纯数字』进行排序(默认是以文字型态来排序的)；
+        -r  ：反向排序；
+        -u  ：就是 uniq ，相同的数据中，仅出现一行代表；
+        -t  ：分隔符，默认是用 [tab] 键来分隔；
+        -k  ：以那个区间 (field) 来进行排序的意思
+        uniq [-ic]
+        -i  ：忽略大小写字符的不同；
+        -c  ：进行计数
+        wc [-lwm]
+        -l  ：仅列出行；
+        -w  ：仅列出多少字(英文单字)；
+        -m  ：多少字符；
+        配合pipe一起使用，一般都是先查看或列出文档然后在用上面的相应命令统计
+
+        read [var]：从标准输入读取一行，保存到变量var中
+        set：设置选项和位置参量
+        unset [name]：取消指定变量的值或函数的定义
+        exit [n]：以状态n退出Shell。
+        export [var]：使变量可被子Shell识别。
+        fg：把后台作业放到前台。
+        jobs：显示放到后台的作业
+
+        ((bash shell 位置参数))
+
+            $ ./test param1 param2 param3
+            $* 表示所有参数组成的一个字符串，如上，为param1 param2 param3。这些参数之间的间隔是IFS的首个字母即空格，IFS包括TAB，空格，换行等字符。
+            $N 其中$0是./test，它表示执行的脚本名字，剩余的为所带参数，$1为param1，$2为param2 ...
+            $@ 等同于"$1" "$2"... "$N"。
+            $# 表示参数的个数，在上面的例子中为3
+            $$ Shell本身的PID（ProcessID）
+            $? 最后运行的命令的结束代码（返回值
+            $! Shell最后运行的后台Process的PID
+
+    (adb)
+
+
+        adb devices no permissions 解决办法
+        1.lsusb 查看设备端口 插入手机前后对比多出来的就是自己的设备
+        2.记住ID
+        3.sudo vi /etc/udev/rules.d/51-android.rules 如果没有就建立，有可以追加
+        4.添加SUBSYSTEM=="usb", SYSFS{idVendor}=="1782", MODE="0666" 1782为你设备ID
+        5.sudo chmod a+rx /etc/udev/rules.d/51-android.rules
+        6.sudo /etc/init.d/udev restart  或者 sudo restart udev
+        7.在自己安装adb 目录下
+        sudo ./adb kill-server
+        sudo ./adb start-server
+        sudo ./adb devices
+
+    (adb install worry)
+
+        错误信息如下：
+            ...
+            pkg: /data/local/tmp/Calendar.apk
+            Failure [INSTALL_FAILED_UPDATE_INCOMPATIBLE]
+        原因分析：
+            很可能是因为之前卸载应用不彻底，只是简单的rm /data/app/下面的apk文件
+        解决方法：
+            办法1:
+            settings->applications->mange applications-> select the application->select "unistall".
+            办法2：
+            若方法1不可行，可将/data/system/packages.xml中该应用相关信息删掉，然后再次安装即可，因为adb install后，会在packages.xml中添加相应的程序信息。
+
+    (adb )
+        错误信息如下：
+            adb server is out of date. killing... ADB server didn't ACK
+        原因分析：
+            adb server所使用的5037号端口被占用
+        解决方法：
+            找出占用5037端口的程序，然后杀掉它
+            netstat -aon | grep "5037"  查看进程
+            kill -9 进程号
+
+    (adb 命令行查看当前所有Activity的命令)
+        adb shell dumpsys activity  前提是你为SDK配置了环境变量
+
+    (ubuntu java jdk && apt-get)
+
+        java -version  查看版本
+        sudo update-alternatives --config java  不同版本直接切换
+        sudo update-alternatives --config javac  javac也需要切换到相同的版本
+        sudo apt-get remove openjdk*
+        sudo add-apt-repository ppa:user/ppa-name   PPA，表示 Personal Package Archives，也就是个人软件包集,允许用户建立自己的软件仓库， 自由的上传软件.
+        sudo apt-get update
+        sudo apt-get install oracle-java7-installer
+        sudo apt-get install oracle-java7-set-default 设置为默认
+        apt-get update 更新软件列表。
+        apt-get upgrade 更新软件。
+        apt-get dist-upgrade 更新系统版本
+
+        现象：
+        E: Unmet dependencies. Try 'apt-get -f install' with no packages (or specify a solution).
+        解决方法：
+        sudo apt-get -f install lib32bz2-1.0
+        原理：apt-get -f install=apt-get install -f ，是修复依赖关系（depends）的命令，就是假如你的系统上有某个package不满足依赖条件，这个命令就会自动修复，安装那个package依赖的package
+
+    (编译系统)
+
+        在其他情况都正确的情况下，make -j32仍然报错，可以试着把项目下的out目录删除重新编译。
+        ./zrevo/CopyImages.sh -p   在系统跟目录下执行该命令,将系统打包压缩
+
+
+    (查看系统版本)
+
+        getconf LONG_BIT                #查看当前安装的系统是32位还是64位
+        getconf -a                      #获取系统的基本配置信息，比如操作系统位数，磁盘大小，内存大小等
+        uname -a                        #可显示电脑以及操作系统的相关信息
+        cat /proc/version               #正在运行的内核版本
+        cat /etc/issue                  #显示的是发行版本信息
+        lsb_release -a                  #列出所有版本信息。这个命令适合所有的linux，包括Redhat、SuSE、Debian等发行版本
+
+[其它]
+
+    (drawable　注意事项)
+        drawable 里面的xml 文件，不要指向同名的png文件，或则，一旦png资源忘记添加，就会发生递归，导致内存溢出。
+
+    (终端输命令 快捷键)
+
+        ctrl+a=开始位置
+        ctrl+e=最后位置
+        ctrl+k=删除此处至末尾所有内容
+        ctrl+u=删除此处至开始所有内容
+        ctrl+d=删除当前字母
+        ctrl+w=删除此处到左边的单词
+        ctrl+y=粘贴由ctrl+u，ctrl+d，ctrl+w删除的单词
+        ctrl+l=相当于clear
+        ctrl+b=向回移动
+        ctrl+f=向前移动
+        ctrl+p=向上显示缓存命令
+        ctrl+n=向下显示缓存命令
+        ctrl+d=关闭终端
+        ctrl+z=将当前进程置于后台，fg还原。
+        ctrl+t=交换光标前两个字符。
+        ctrl+h=删除光标前一个字符。
+        <ESC>+d=从光标开始处删除到行尾
+
+    (提交代码审核)
+
+        如果错误显示为：用户名邮箱错误信息，查看显示信息要求的用户名与邮箱，在做判断更改
+        1.更改项目下的用户名和邮箱 ***/.git/config
+        2.更改用户系统下的也就所～/.gitconfig
+        git push origin HEAD:refs/for/oos
+
+    (连接符)
+
+        ;       顺序执行命令(例> date;pwd;touch one)
+        &&      逻辑与关系(即上一条命令执行成功之后才执行下一条命令)
+        ||      逻辑或关系(上一条命令执行成功则不执行下一条命令,上一条命令执行失败则执行下一条命令)
+
+    (实用小工具)
+
+        sudo apt-get autoremove gcalctool 计算器
+        sudo apt-get install gcolor2      颜色拾取器
+
+    (刷机)
+
+        1.先获取并更新，编译整个系统文件
+        2.打包系统文件并复制到win系统中
+        3.安装相应版本的刷机包，导入打包好的.pac文件
+        4.手机关机，连接电脑按住音量上键等待软件更新手机系统。
+
+    (正则表达式)
+
+        \d：代表一个数字，等同于[0-9] 
+        \D：代表非数字，等同于[^0-9] 
+        \s: 匹配任意的空白符任意的空白符，包括空格，制表符(Tab)，换行符，中文全角空格等
+        \S：代表非空白字符 
+        \w：匹配字母或数字或下划线或汉字，即能组成单词的字符
+        \W：非\w ，等同于[^\w] 
+        \b: 匹配单词的开始或结束
+        ^   匹配字符串的开始
+        $   匹配字符串的结束
+        .   匹配任何单个字符。例如正则表达式“b.g”能匹配如下字符串：“big”、“bug”、“b g”，但是不匹配“buug”，“b..g”可以匹配“buug”
+        [ ] 匹配括号中的任何一个字符。例如正则表达式“b[aui]g”匹配bug、big和bag，但是不匹配beg、baug
+        |   将两个匹配条件进行逻辑“或”运算。'z|food' 能匹配 "z" 或 "food"。'(z|f)ood' 则匹配 "zood" 或 "food"。
+        ( ) 将 () 之间括起来的表达式定义为“组”(group)，并且将匹配这个表达式的字符保存到一个临时区域,这个元字符在字符串提取的时候非常有用。把一些字符表示为一个整体。改变优先级、定义提取组两个作用。
+        *   匹配0至多个在它之前的子表达式，和通配符*没关系。例如正则表达式“zo*”能匹配 “z” 、“zo”以及 “zoo”；因此“.*”意味着能够匹配任意字符串。"z(b|c)*"→zb、zbc、zcb、zccc、zbbbccc。"z(ab)*"能匹配z、zab、zabab（用括号改变优先级）
+        +   匹配前面的子表达式一次或多次，和*对比（0到多次）。例如正则表达式9+匹配9、99、999等。 “zo+”能匹配 “zo”以及 “zoo” ，不能匹配"z"。
+        ?   匹配前面的子表达式零次或一次。例如，"do(es)?" 可以匹配 "do" 或 "does" 。一般用来匹配“可选部分”。
+        假如你要找的是hi后面不远处跟着一个Lucy，你应该用\bhi\b.*\bLucy\b *它指定*前边的内容可以连续重复使用任意次以使整个表达式得到匹配"."是另一个元字符，匹配除了换行符以外的任意字符.".*"连在一起就意味着任意数量的不包含换行的字符
+        0\d{2}-\d{8}。这里\d后面的{2}({8})的意思是前面\d必须连续重复匹配2次(8次)
+        \ba\w*\b匹配以字母a开头的单词——先是某个单词开始处(\b)，然后是字母a,然后是任意数量的字母或数字(\w*)，最后是单词结束处(\b)
+        \d+匹配1个或更多连续的数字。这里的+是和*类似的元字符，不同的是*匹配重复任意次(可能是0次)，而+则匹配重复1次或更多次。
+        \b\w{6}\b 匹配刚好6个字符的单词。
+
+
+    (bug 解决方案)
+
+        Fixed 已经被修复或更正了
+        Duplicated 表示测试人员所找到的某个Bug已经被别人找出来了
+        PostPoned 这个Bug不是很重要，或者更正这个Bug风险太大，Bug本身又不会造成大的影响
+        By Design 测试人员认为是Bug，不符合逻辑，也不符合用户的需求
+        Not repro 可能是处理其他Bug的时候把这个Bug一并修复掉了
+        Won't Fix 这个Bug完全可以忽略不计
+
+    (vmware error)
+
+        问题：Unable to change virtual machine power state: Internal error.
+        原因：有一个“vmware-vmx”进程还在运行。
+        解决方法：
+        fanwuyang@fwy:~$ ps aux | grep vmware-vmx
+        fanwuyang@fwy:~$ killall -s9 vmware-vmx
+
+
+
+
+
+
+
+
+
+
+
+
+
+        penJDK1.8
+        分类：小方法
+        1、sudo add-apt-repository ppa:openjdk-r/ppa
+        2、sudo apt-get update
+        3、sudo apt-get install openjdk-8-jdk
+        4、执行：sudo update-alternatives –config java，选择java的版本
+        5、执行：sudo update-alternatives –config javac，选择javac的版本
+
+        ubuntu通过apt-get安装JDK8
+
+        安装python-software-properties
+
+        $sudo apt-get install python-software-properties
+        $sudo apt-get install software-properties-common
+
+        首先添加ppa
+        $ sudo add-apt-repository ppa:webupd8team/java
+
+        然后更新系统
+        $ sudo apt-get update
+
+        最后开始安装
+        $ sudo apt-get install oracle-java8-installer
+        $ java -version
+        java version "1.8.0_05"
+        Java(TM) SE Runtime Environment (build 1.8.0_05-b13)
+        Java HotSpot(TM) Server VM (build 25.5-b02, mixed mode)
+
+        java版本切换
+        sudo update-java-alternatives -s java-8-oracle
+
+
+        从网上搜索到可以通过以下命令删除缓存：
+        非常有用的清理命令：
+        sudo apt-get autoclean 清理旧版本的软件缓存
+        sudo apt-get clean 清理所有软件缓存
+        sudo apt-get autoremove 删除系统不再使用的孤立软件
+
+
+
+
+
+
+            apt-cache search package 搜索包
+        　　apt-cache show package 获取包的相关信息，如说明、大小、版本等
+        　　sudo apt-get install package 安装包
+        　　sudo apt-get install package - - reinstall 重新安装包
+        　　sudo apt-get -f install 修复安装"-f = ——fix-missing"
+        　　sudo apt-get remove package 删除包
+        　　sudo apt-get remove package - - purge 删除包，包括删除配置文件等
+        　　sudo apt-get update 更新源
+        　　sudo apt-get upgrade 更新已安装的包
+        　　sudo apt-get dist-upgrade 升级系统
+        　　sudo apt-get dselect-upgrade 使用 dselect 升级
+        　　apt-cache depends package 了解使用依赖
+        　　apt-cache rdepends package 是查看该包被哪些包依赖
+        　　sudo apt-get build-dep package 安装相关的编译环境
+        　　apt-get source package 下载该包的源代码
+        　　sudo apt-get clean && sudo apt-get autoclean 清理无用的包
+        　　sudo apt-get check 检查是否有损坏的依赖
+
+
+
+        1.jar、javadoc或者javah命令找不到
+        /bin/bash: jar: command not found
+        make: *** [out/host/common/obj/JAVA_LIBRARIES/antlr-runtime_intermediates/javalib.jar] Error 127
+        或者
+        /bin/bash: javah: command not found
+        可以执行以下命令：
+        cd /usr/bin
+        ln -s -f /usr/lib/jvm/jdk1.6.0_45/bin/javah
+        ln -s -f /usr/lib/jvm/jdk1.6.0_45/bin/javadoc
+        ln -s -f /usr/lib/jvm/jdk1.6.0_45/bin/jar
+        /bin/bash: jar: command not found
+        解决办法：
+        cd /usr/bin
+        必须先进入/usr/bin，下同
+        sudo ln -s -f /usr/lib/jvm/jdk1.6.0_30/bin/jar
+        我的jdk是安装在/usr/lib/jvm/jdk1.6.0_30/目录下的
+        如果提示javah：commond not found，于是照葫芦画瓢，输入命令
+        cd /usr/bin
+        ln -s -f /usr/lib/jvm/jdk1.6.0_30/bin/javah 
+
+        2.[out/target/common/docs/api-stubs-timestamp] Error 45
+        执行以下命令：
+        make clean
+        make
+
+
+         svn status|grep ? |awk '{print $2}'|xargs rm -rf
+
+
+
+
+        adb shell service list;
+
+        查看应用的内存使用情况：
+            adb shell dumpsys meminfo $package_name or $pid    
+            查看servicecs使用细节
+            adb shell dumpsys activity services
+            查看activity使用细节
+            adb shell dumpsys activity
+            dumpsys命令可以显示手机中所有应用程序的信息，并且也会给出现在手机的状态。
+            直接执行adb shell dumpsys会显示以下所有信息。
+
+            dumpsys的参数可以跟以上信息的名字。例如：
+            adb shell dumpsys activity 显示activity相关的信息
+            adb shell dumpsys statusbar 显示状态栏相关的信息
+            adb shell dumpsys meminfo $package_name or $pid 使用程序的包名或者进程id显示内存信息
+            可以通过这个命令实现很多有用的小应用，比如内存信息相关的，状态栏的通知都是哪个应用谈出来的等等。
+            我通过这个命令写了一个小应用”找出状态栏广告的主人“。普通通知很容易辨认是哪个应用的，广告就不好辨认了。
+            其实应用就相当于一条shell命令：
+            adb shell dumpsys statusbar | grep notification=Notification
+            这条命令可以找出状态栏通知的包名，进而找到是哪个应用。
+
+
+
+
+整个项目导入AS的操作：为android studio创建android源码索引：
+source build/envsetup.sh 
+
+lunch +  工程分之名
+mmm development/tools/idegen/
+./development/tools/idegen/idegen.sh
+
+adb shell
+getprop 查看机器的全部信息参数
+getprop ro.serialno 查看机器的SN号
+getprop ro.carrier 查看机器的CID号
+getprop ro.hardware 查看机器板子代号
+getprop ro.bootloader 查看SPL（Hboot）版本号
+
+安卓源码加教程
+
+链接：http://pan.baidu.com/s/1o77IYYA 密码：kxxg
+HTML5 800套网站源码
+链接：http://pan.baidu.com/s/1eQ0BO7C 密码：exav
+
+1000套安卓源码+视频教程
+链接：http://pan.baidu.com/s/1hqAbm2C 密码：75lp
+
+链接：http://pan.baidu.com/s/1eQhEYfo 密码：5yz7
+链接：http://pan.baidu.com/s/1i3AFhJ3 密码：0mz0
+链接：http://pan.baidu.com/s/1ntyvIml 密码：dvt8
+链接：http://pan.baidu.com/s/1gdisSZD 密码：ihqf
+链接：http://pan.baidu.com/s/1Gtd0M 密码：nrzq
+几十部安卓谷歌企业级教程电子书
+链接：http://pan.baidu.com/s/1i3IgHy1 密码：i3b4
+JAVA入门到精通
+链接：http://pan.baidu.com/s/1mgn8zqC 密码：q7al
+安卓开发例子大全
+链接：http://pan.baidu.com/s/1ntA6Wlz 密码：c195
+分类安卓源码
+链接：http://pan.baidu.com/s/1kTsukeV 密码：p5uf
+77个安卓游戏源码
+链接：http://pan.baidu.com/s/1nt9QZrz 密码：ypvq
+喜欢的话，点个赞吧，不要做伸手党
